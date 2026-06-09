@@ -67,7 +67,7 @@ export default async function PropiedadPage({
   if (!property || property.status === 'INACTIVE') notFound()
 
   const {
-    title, description, price, priceOld, type, status,
+    id, title, description, price, priceOld, type, status,
     address, city, district, latitude, longitude,
     photos, features, category,
     whatsappPhone, whatsappMessage, reference,
@@ -194,6 +194,7 @@ export default async function PropiedadPage({
                   message={whatsappMessage}
                   propertyTitle={title}
                   propertyRef={reference ?? undefined}
+                  propertyId={id}
                   propertyUrl={propertyUrl}
                   className="w-full"
                 />

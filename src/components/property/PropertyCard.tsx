@@ -18,6 +18,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, className, priority = false }: PropertyCardProps) {
   const {
+    id,
     slug,
     title,
     price,
@@ -108,6 +109,7 @@ export function PropertyCard({ property, className, priority = false }: Property
               message={whatsappMessage}
               propertyTitle={title}
               propertyRef={reference ?? undefined}
+              propertyId={id}
               propertyUrl={propertyUrl}
             />
           </div>
@@ -169,6 +171,7 @@ export function PropertyCard({ property, className, priority = false }: Property
             message={whatsappMessage}
             propertyTitle={title}
             propertyRef={reference ?? undefined}
+            propertyId={id}
             propertyUrl={propertyUrl}
             className="w-full"
           />

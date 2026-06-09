@@ -8,6 +8,7 @@ interface WhatsAppButtonProps {
   message?: string | null
   propertyTitle?: string
   propertyRef?: string
+  propertyId?: string
   propertyUrl?: string
   variant?: 'full' | 'icon'
   className?: string
@@ -18,18 +19,26 @@ export function WhatsAppButton({
   message,
   propertyTitle,
   propertyRef,
+  propertyId,
   propertyUrl,
   variant = 'full',
   className,
 }: WhatsAppButtonProps) {
   const url = buildWhatsAppUrl({ phone, message, propertyTitle, propertyRef, propertyUrl })
 
+  const trackAndOpen = () => {
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ propertyId, propertyRef, source: 'whatsapp' }),
+    }).catch(() => {})
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   if (variant === 'icon') {
     return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        onClick={trackAndOpen}
         aria-label="Contactar por WhatsApp"
         className={cn(
           'inline-flex items-center justify-center rounded-full bg-[#25D366] p-2.5',
@@ -38,15 +47,13 @@ export function WhatsAppButton({
         )}
       >
         <WhatsAppIcon className="h-5 w-5" />
-      </a>
+      </button>
     )
   }
 
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      onClick={trackAndOpen}
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-5 py-3',
         'text-sm font-semibold text-white shadow-md transition',
@@ -56,7 +63,7 @@ export function WhatsAppButton({
     >
       <WhatsAppIcon className="h-5 w-5 flex-shrink-0" />
       Consultar por WhatsApp
-    </a>
+    </button>
   )
 }
 
