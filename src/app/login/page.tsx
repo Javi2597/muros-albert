@@ -110,6 +110,20 @@ export default function LoginPage() {
                 {isPending ? 'Enviando…' : 'Enviar enlace de acceso'}
               </button>
             </form>
+
+            {/* TEMPORAL — borrar antes de entregar */}
+            <div className="mt-4 border-t border-gray-100 pt-4">
+              <button
+                onClick={async () => {
+                  const supabase = createClient()
+                  await supabase.auth.signInAnonymously()
+                  window.location.href = '/admin'
+                }}
+                className="w-full rounded-xl border border-gray-200 py-2.5 text-sm text-gray-500 transition hover:bg-gray-50"
+              >
+                Ingresar sin mail (temporal)
+              </button>
+            </div>
           )}
         </div>
       </div>
