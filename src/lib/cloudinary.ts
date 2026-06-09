@@ -32,7 +32,7 @@ export function buildCloudinaryUrl(
     gravity = 'auto',
   } = options
 
-  const transforms: string[] = [
+  const transforms = [
     `f_${format}`,
     `q_${quality}`,
     crop && `c_${crop}`,

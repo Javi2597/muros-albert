@@ -9,8 +9,8 @@ import { thumbImage } from '@/lib/cloudinary'
 export type UploadedPhoto = {
   cloudinaryId: string
   url: string
-  altText: string
-  caption: string
+  altText?: string
+  caption?: string
   order: number
   isPrimary: boolean
 }
@@ -235,7 +235,7 @@ export function ImageUploader({
               <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                 <Image
                   src={thumbImage(photo.cloudinaryId)}
-                  alt={photo.altText || `Foto ${i + 1}`}
+                  alt={photo.altText ?? `Foto ${i + 1}`}
                   fill
                   sizes="200px"
                   className="object-cover"
@@ -299,7 +299,7 @@ export function ImageUploader({
                 </div>
                 <input
                   type="text"
-                  value={photo.altText}
+                  value={photo.altText ?? ''}
                   onChange={(e) => updateAlt(i, e.target.value)}
                   placeholder="Descripción de la foto"
                   className="w-full rounded border-0 bg-gray-50 px-2 py-1 text-[11px] text-gray-600 ring-1 ring-gray-200 focus:ring-slate-400 focus:outline-none"
