@@ -1,0 +1,226 @@
+// ============================================================
+// PRISMA SCHEMA — Plataforma Inmobiliaria
+// Stack: Next.js + Supabase (PostgreSQL) + Prisma + Cloudinary
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // requerido por Supabase para migraciones
+}
+
+// ------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------
+
+enum PropertyType {
+  SALE    // Venta
+  RENT    // Alquiler
+  BOTH    // Venta y Alquiler
+}
+
+enum PropertyStatus {
+  ACTIVE    // Disponible
+  RESERVED  // Reservada
+  SOLD      // Vendida
+  RENTED    // Alquilada
+  INACTIVE  // Oculta (borrador)
+}
+
+enum OperationType {
+  HOUSE        // Casa
+  APARTMENT    // Apartamento / Piso
+  COMMERCIAL   // Local Comercial
+  OFFICE       // Oficina
+  LAND         // Terreno
+  GARAGE       // Garaje
+  STORAGE      // Trastero
+}
+
+// ------------------------------------------------------------
+// MODELO PRINCIPAL: PROPIEDAD
+// ------------------------------------------------------------
+
+model Property {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // --- Identificación y SEO ---
+  slug        String         @unique // URL amigable: "piso-3-habitaciones-gracia"
+  title       String         // Título del anuncio
+  description String         // Descripción larga (HTML/Markdown)
+  metaTitle   String?        // Título SEO (opcional, usa title si está vacío)
+  metaDesc    String?        // Meta description (<160 chars)
+
+  // --- Clasificación ---
+  type        PropertyType   @default(SALE)
+  status      PropertyStatus @default(ACTIVE)
+  operation   OperationType  @default(APARTMENT)
+
+  // --- Precios ---
+  price           Decimal  @db.Decimal(12, 2) // Precio de venta o alquiler/mes
+  priceOld        Decimal? @db.Decimal(12, 2) // Precio anterior (para mostrar rebaja)
+  priceNegotiable Boolean  @default(false)
+  communityFees   Decimal? @db.Decimal(8, 2)  // Gastos de comunidad/mes
+  ibiTax          Decimal? @db.Decimal(8, 2)  // IBI anual
+
+  // --- Superficie ---
+  areaTotal    Int?  // m² totales construidos
+  areaUsable   Int?  // m² útiles
+  areaPlot     Int?  // m² parcela (para casas/terrenos)
+  areaTerrace  Int?  // m² terraza
+
+  // --- Habitaciones ---
+  bedrooms    Int @default(0)
+  bathrooms   Int @default(0)
+  toilets     Int @default(0)  // aseos (baño sin ducha)
+  floor       Int?             // planta (null = planta baja)
+  totalFloors Int?             // total de plantas del edificio
+
+  // --- Extras booleanos rápidos ---
+  hasElevator  Boolean @default(false)
+  hasParking   Boolean @default(false)
+  hasPool      Boolean @default(false)
+  hasGarden    Boolean @default(false)
+  hasStorage   Boolean @default(false)
+  hasTerrace   Boolean @default(false)
+  hasAC        Boolean @default(false)
+  hasHeating   Boolean @default(false)
+  isPetFriendly Boolean @default(false)
+
+  // --- Energía ---
+  energyRating     String? // A, B, C, D, E, F, G
+  emissionsRating  String?
+
+  // --- Localización ---
+  address     String   // Dirección completa (puede ser parcial por privacidad)
+  city        String
+  district    String?  // Barrio / Distrito
+  postalCode  String?
+  province    String   @default("Barcelona")
+  country     String   @default("España")
+  latitude    Float?   // Para el mapa
+  longitude   Float?
+
+  // --- Contacto WhatsApp ---
+  whatsappPhone   String?  // Ej: "34612345678" (sin + ni espacios)
+  whatsappMessage String?  // Mensaje pre-escrito personalizado
+
+  // --- Referencia interna ---
+  reference   String? @unique // Código interno del agente: "BCN-0042"
+
+  // --- Relaciones ---
+  photos      Photo[]
+  features    PropertyFeature[]
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+
+  @@index([status])
+  @@index([type])
+  @@index([operation])
+  @@index([city])
+  @@index([price])
+  @@index([slug])
+  @@map("properties")
+}
+
+// ------------------------------------------------------------
+// FOTOS (Cloudinary)
+// ------------------------------------------------------------
+
+model Photo {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+
+  // Cloudinary
+  cloudinaryId String   // public_id de Cloudinary (ej: "albert-inmo/bcn-042/foto-salon")
+  url          String   // URL base de Cloudinary
+  altText      String?  // Texto alternativo para SEO/accesibilidad
+  caption      String?  // Pie de foto (opcional)
+
+  // Orden y destacada
+  order       Int      @default(0) // 0 = portada principal
+  isPrimary   Boolean  @default(false) // Solo una por propiedad
+
+  // Relación
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId  String
+
+  @@index([propertyId])
+  @@index([order])
+  @@map("photos")
+}
+
+// ------------------------------------------------------------
+// CATEGORÍAS (ej: "Obra nueva", "Lujo", "Inversión", "Oportunidad")
+// Distinto de OperationType — son etiquetas editoriales
+// ------------------------------------------------------------
+
+model Category {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String?  // hex color para badge: "#FF5733"
+  icon        String?  // nombre de icono (ej: "star", "zap")
+  properties  Property[]
+
+  @@map("categories")
+}
+
+// ------------------------------------------------------------
+// CARACTERÍSTICAS ADICIONALES (tabla de atributos libre)
+// Permite añadir extras sin cambiar el schema
+// Ej: "Cocina equipada", "Suelo radiante", "Vistas al mar"
+// ------------------------------------------------------------
+
+model Feature {
+  id    String  @id @default(cuid())
+  name  String  @unique // Nombre normalizado: "Cocina equipada"
+  icon  String? // Nombre de icono Lucide/Heroicons
+
+  properties PropertyFeature[]
+
+  @@map("features")
+}
+
+model PropertyFeature {
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId  String
+  feature     Feature  @relation(fields: [featureId], references: [id])
+  featureId   String
+
+  @@id([propertyId, featureId])
+  @@map("property_features")
+}
+
+// ------------------------------------------------------------
+// CONTACTOS / LEADS (formulario de interés)
+// ------------------------------------------------------------
+
+model Lead {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  name        String
+  email       String?
+  phone       String?
+  message     String?
+  source      String?  // "whatsapp" | "form" | "phone"
+
+  // Propiedad de interés (opcional, puede ser consulta general)
+  propertyId  String?
+  propertyRef String?  // referencia interna como string (por si la propiedad se elimina)
+
+  isRead      Boolean  @default(false)
+
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("leads")
+}

@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Scroll suave en toda la app */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Tipografía base */
+  body {
+    @apply text-gray-900 antialiased;
+  }
+}
+
+@layer utilities {
+  /* Ocultar scrollbar manteniendo funcionalidad (thumbnails de galería) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

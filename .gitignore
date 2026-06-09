@@ -1,0 +1,42 @@
+# ── Dependencias ─────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── Next.js ───────────────────────────────────────────────
+.next/
+out/
+build/
+
+# ── Variables de entorno (NUNCA al repo) ─────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Prisma ────────────────────────────────────────────────
+# El cliente generado se regenera con `prisma generate`
+# Las migraciones SÍ van al repo (prisma/migrations/)
+
+# ── Logs ──────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── TypeScript ────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Claude Code ───────────────────────────────────────────
+.claude/
