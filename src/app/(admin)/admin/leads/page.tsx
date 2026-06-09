@@ -76,7 +76,7 @@ export default async function LeadsPage() {
                   )}
 
                   <p className="mt-1 text-xs text-gray-400">
-                    {new Date(lead.createdAt).toLocaleDateString('es-ES', {
+                    {new Date(lead.createdAt).toLocaleDateString('es-AR', {
                       day: '2-digit', month: 'short', year: 'numeric',
                       hour: '2-digit', minute: '2-digit',
                     })}

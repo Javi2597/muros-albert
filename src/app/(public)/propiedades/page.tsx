@@ -7,7 +7,7 @@ import { PropertyStatus } from '@prisma/client'
 export const metadata: Metadata = {
   title: 'Propiedades en venta y alquiler | Albert Inmo',
   description:
-    'Encuentra pisos, casas y locales en Barcelona. Asesoramiento personalizado y las mejores propiedades seleccionadas para ti.',
+    'Encontrá propiedades en venta y alquiler en Buenos Aires. Asesoramiento personalizado y las mejores propiedades en CABA y GBA.',
 }
 
 // Revalidar cada 60 s → ISR: SEO + frescura de datos sin SSR puro

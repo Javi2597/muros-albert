@@ -9,19 +9,19 @@ const inter = Inter({
 })
 
 const SITE_NAME = 'Albert Inmo'
-const SITE_DESC = 'Agencia inmobiliaria en Barcelona. Pisos, casas y locales en venta y alquiler.'
+const SITE_DESC = 'Agencia inmobiliaria en Buenos Aires. Propiedades en venta y alquiler en CABA y GBA.'
 const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://albertinmo.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | Inmobiliaria en Barcelona`,
+    default: `${SITE_NAME} | Inmobiliaria en Buenos Aires`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESC,
   openGraph: {
     siteName: SITE_NAME,
-    locale: 'es_ES',
+    locale: 'es_AR',
     type: 'website',
   },
   robots: {

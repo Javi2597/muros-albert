@@ -37,7 +37,7 @@ export default async function HomePage() {
           Encuentra tu próximo hogar
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-base text-slate-300">
-          Pisos, casas y locales en venta y alquiler en Barcelona y alrededores.
+          Propiedades en venta y alquiler en CABA y GBA.
           Asesoramiento personalizado sin compromiso.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">

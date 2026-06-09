@@ -102,8 +102,8 @@ model Property {
   city        String
   district    String?  // Barrio / Distrito
   postalCode  String?
-  province    String   @default("Barcelona")
-  country     String   @default("España")
+  province    String   @default("Buenos Aires")
+  country     String   @default("Argentina")
   latitude    Float?   // Para el mapa
   longitude   Float?
 

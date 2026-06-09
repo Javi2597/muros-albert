@@ -73,7 +73,7 @@ export default async function DashboardPage() {
                   <div>
                     <p className="text-sm font-medium text-gray-800 line-clamp-1">{p.title}</p>
                     <p className="text-xs text-gray-400">
-                      {new Date(p.updatedAt).toLocaleDateString('es-ES', {
+                      {new Date(p.updatedAt).toLocaleDateString('es-AR', {
                         day: '2-digit', month: 'short', year: 'numeric',
                       })}
                     </p>

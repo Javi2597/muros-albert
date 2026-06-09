@@ -64,8 +64,8 @@ function defaultValues(property?: PropertyWithAll): PropertyFormData {
     city:            property?.city            ?? '',
     district:        property?.district        ?? '',
     postalCode:      property?.postalCode      ?? '',
-    province:        property?.province        ?? 'Barcelona',
-    country:         property?.country         ?? 'España',
+    province:        property?.province        ?? 'Buenos Aires',
+    country:         property?.country         ?? 'Argentina',
     latitude:        property?.latitude        ?? undefined,
     longitude:       property?.longitude       ?? undefined,
     whatsappPhone:   property?.whatsappPhone   ?? '',
@@ -443,7 +443,7 @@ export function PropertyForm({ property, categories, features }: PropertyFormPro
                 type="text"
                 value={data.city}
                 onChange={(e) => set('city', e.target.value)}
-                placeholder="Barcelona"
+                placeholder="Buenos Aires"
                 className={inputClass}
               />
             </Field>
@@ -470,7 +470,7 @@ export function PropertyForm({ property, categories, features }: PropertyFormPro
                 type="text"
                 value={data.province}
                 onChange={(e) => set('province', e.target.value)}
-                placeholder="Barcelona"
+                placeholder="Buenos Aires"
                 className={inputClass}
               />
             </Field>
