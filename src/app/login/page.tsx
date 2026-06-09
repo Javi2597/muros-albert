@@ -67,7 +67,8 @@ export default function LoginPage() {
               </button>
             </div>
           ) : (
-            /* Formulario de login */
+            <>
+            {/* Formulario de login */}
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
                 <h2 className="text-base font-semibold text-gray-900">Acceder</h2>
@@ -124,6 +125,7 @@ export default function LoginPage() {
                 Ingresar sin mail (temporal)
               </button>
             </div>
+            </>
           )}
         </div>
       </div>
