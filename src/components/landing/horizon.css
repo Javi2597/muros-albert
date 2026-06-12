@@ -1,0 +1,690 @@
+/* =========================================================
+   ALBERT INMO — Landing "Living Interface"
+   Ported from the home-future design · scoped to .horizon
+   Mobile-first · Dark glassmorphism + neon
+   ========================================================= */
+
+:root{
+  /* surfaces */
+  --bg-void:#05060A;
+  --bg-deep:#0A0C14;
+  --bg-soft:#10131E;
+  --glass:rgba(255,255,255,.05);
+  --glass-strong:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.10);
+  --line-soft:rgba(255,255,255,.06);
+
+  /* neon */
+  --neon-cyan:#3DE0FF;
+  --neon-violet:#9D6BFF;
+  --neon-pink:#FF4D8D;
+  --neon-cyan-glow:rgba(61,224,255,.45);
+  --neon-violet-glow:rgba(157,107,255,.45);
+
+  /* text */
+  --text-hi:#F4F7FB;
+  --text-mid:#C2CAD8;
+  --text-lo:#8C97AC;
+
+  /* type — bridged to Next.js next/font CSS variables, with web-font + system fallbacks */
+  --font-display:var(--font-space),'Space Grotesk',system-ui,sans-serif;
+  --font-body:var(--font-inter),'Inter',system-ui,sans-serif;
+
+  /* spacing scale (8pt) */
+  --s-1:.5rem; --s-2:1rem; --s-3:1.5rem; --s-4:2rem;
+  --s-5:3rem; --s-6:4rem; --s-7:6rem; --s-8:8rem;
+
+  /* radius */
+  --r-sm:12px; --r-md:18px; --r-lg:28px; --r-xl:40px;
+
+  /* fx */
+  --blur:18px;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+
+  /* z */
+  --z-nav:100; --z-portal:1000; --z-preload:2000;
+}
+
+/* keep the page surface dark while the landing is mounted, even on overscroll */
+body:has(.horizon){background:var(--bg-void)}
+body.is-locked{overflow:hidden}
+
+.horizon{
+  font-family:var(--font-body);
+  background:var(--bg-void);
+  color:var(--text-hi);
+  line-height:1.6;
+  overflow-x:hidden;
+  min-height:100svh;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.horizon *,.horizon *::before,.horizon *::after{box-sizing:border-box;margin:0;padding:0}
+
+.horizon img{display:block;max-width:100%;height:auto}
+.horizon a{color:inherit;text-decoration:none}
+.horizon button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.horizon em{font-style:normal;color:var(--neon-cyan)}
+
+.horizon ::selection{background:var(--neon-violet);color:#fff}
+
+/* ---------- shared section heads ---------- */
+.horizon .section__eyebrow{
+  font-family:var(--font-display);
+  text-transform:uppercase;letter-spacing:.32em;
+  font-size:.72rem;color:var(--neon-cyan);margin-bottom:var(--s-2);
+}
+.horizon .section__title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(2rem,8vw,3.4rem);line-height:1.05;
+  letter-spacing:-.02em;margin-bottom:var(--s-2);
+}
+.horizon .section__lead{
+  color:var(--text-lo);max-width:52ch;font-size:1.02rem;
+}
+
+/* ---------- buttons ---------- */
+.horizon .btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  font-family:var(--font-display);font-weight:500;font-size:.98rem;
+  min-height:52px;padding:0 1.6rem;border-radius:100px;
+  transition:transform .25s var(--ease-out), box-shadow .3s var(--ease-out), background .3s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.horizon .btn--primary{
+  background:linear-gradient(120deg,var(--neon-cyan),var(--neon-violet));
+  color:#05060A;font-weight:600;
+  box-shadow:0 8px 30px -8px var(--neon-cyan-glow);
+}
+.horizon .btn--primary:active{transform:scale(.96)}
+.horizon .btn--ghost{
+  background:var(--glass);border:1px solid var(--line);
+  color:var(--text-hi);backdrop-filter:blur(var(--blur));
+}
+.horizon .btn--ghost:active{transform:scale(.96);background:var(--glass-strong)}
+.horizon .btn--block{width:100%}
+@media (hover:hover){
+  .horizon .btn--primary:hover{transform:translateY(-2px);box-shadow:0 14px 40px -8px var(--neon-cyan-glow)}
+  .horizon .btn--ghost:hover{background:var(--glass-strong);border-color:var(--neon-cyan)}
+}
+
+/* =========================================================
+   PRELOADER
+   ========================================================= */
+.horizon .preloader{
+  position:fixed;inset:0;z-index:var(--z-preload);
+  background:var(--bg-void);display:grid;place-items:center;
+  /* failsafe CSS puro: si el JS no llega a ocultarlo (p.ej. la hidratación
+     falla en algún móvil), se desvanece solo a los 7s para no tapar la página */
+  animation:hzPreloaderFailsafe .5s ease 7s forwards;
+}
+@keyframes hzPreloaderFailsafe{to{opacity:0;visibility:hidden;pointer-events:none}}
+.horizon .preloader__inner{width:min(80%,360px);text-align:center}
+.horizon .preloader__brand{
+  font-family:var(--font-display);font-weight:700;letter-spacing:.4em;
+  font-size:1.4rem;color:var(--text-hi);margin-bottom:var(--s-3);
+}
+.horizon .preloader__bar{
+  height:2px;width:100%;background:var(--line);border-radius:2px;overflow:hidden;
+}
+.horizon .preloader__bar span{
+  display:block;height:100%;width:0%;
+  background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));
+}
+.horizon .preloader__count{
+  margin-top:var(--s-2);font-family:var(--font-display);
+  color:var(--text-lo);font-size:.85rem;
+}
+
+/* =========================================================
+   NAV
+   ========================================================= */
+.horizon .nav{
+  position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;
+  padding-top:max(1rem,env(safe-area-inset-top));
+  transition:background .4s var(--ease-out), backdrop-filter .4s, border-color .4s;
+  border-bottom:1px solid transparent;
+}
+.horizon .nav.is-scrolled{
+  background:rgba(5,6,10,.6);backdrop-filter:blur(var(--blur));
+  border-bottom:1px solid var(--line-soft);
+}
+.horizon .nav__logo{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:var(--font-display);font-weight:700;letter-spacing:.18em;font-size:1.05rem;
+}
+.horizon .nav__logo-mark{
+  width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,var(--neon-cyan),var(--neon-violet));
+  box-shadow:0 0 14px var(--neon-cyan-glow);
+}
+.horizon .nav__links{display:none}
+.horizon .nav__cta{display:none}
+.horizon .nav__right{display:flex;align-items:center;gap:1rem}
+.horizon .nav__theme{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--glass);color:inherit;
+  backdrop-filter:blur(var(--blur));
+  transition:border-color .3s,background .3s,transform .2s;
+}
+.horizon .nav__theme:active{transform:scale(.94)}
+.horizon .nav__theme svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media (hover:hover){.horizon .nav__theme:hover{border-color:var(--neon-cyan);background:var(--glass-strong)}}
+
+@media (min-width:900px){
+  .horizon .nav{padding:1.1rem 2.5rem}
+  .horizon .nav__links{display:flex;gap:2rem}
+  .horizon .nav__links a{
+    font-family:var(--font-display);font-size:.92rem;color:var(--text-mid);
+    position:relative;padding:.3rem 0;transition:color .25s;
+  }
+  .horizon .nav__links a::after{
+    content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;
+    background:var(--neon-cyan);transition:width .3s var(--ease-out);
+  }
+  .horizon .nav__links a:hover{color:var(--text-hi)}
+  .horizon .nav__links a:hover::after{width:100%}
+  .horizon .nav__cta{
+    display:inline-flex;align-items:center;min-height:44px;padding:0 1.3rem;
+    border-radius:100px;border:1px solid var(--line);background:var(--glass);
+    font-family:var(--font-display);font-size:.9rem;backdrop-filter:blur(var(--blur));
+    transition:border-color .3s,background .3s;
+  }
+  .horizon .nav__cta:hover{border-color:var(--neon-cyan);background:var(--glass-strong)}
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.horizon .hero{
+  position:relative;min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:6rem 1.25rem 5.5rem;overflow:hidden;
+}
+.horizon .hero__bg{position:absolute;inset:-10% 0;z-index:0;will-change:transform}
+.horizon .hero__bg img,.horizon .hero__bg video{width:100%;height:120%;object-fit:cover;opacity:.66}
+.horizon .hero__vignette{
+  position:absolute;inset:0;z-index:1;
+  background:
+    /* scrim lateral izquierdo: detrás de la copy (alineada a la izquierda) */
+    linear-gradient(90deg,rgba(5,6,10,.62) 0%,rgba(5,6,10,.28) 46%,rgba(5,6,10,.04) 78%,transparent 100%),
+    /* desvanecido superior + inferior hacia el fondo de la sección */
+    radial-gradient(120% 75% at 50% 0%,transparent 42%,var(--bg-void) 100%),
+    linear-gradient(180deg,rgba(5,6,10,.30) 0%,rgba(5,6,10,.34) 40%,rgba(5,6,10,.85) 80%,var(--bg-void) 97%);
+}
+.horizon .hero__grid{
+  position:absolute;inset:0;z-index:1;opacity:.4;
+  background-image:
+    linear-gradient(var(--line-soft) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(100% 60% at 50% 40%,#000 0%,transparent 75%);
+}
+/* puntos de interés confinados a la banda superior (cielo), nunca sobre la copy */
+.horizon .hero__poi{position:absolute;top:0;left:0;right:0;height:26%;z-index:1;pointer-events:none}
+@media (max-width:720px){.horizon .hero__poi{height:15%}}
+.horizon .poi{
+  position:absolute;left:var(--x);top:var(--y);width:11px;height:11px;
+  border-radius:50%;background:var(--neon-cyan);
+  box-shadow:0 0 0 4px rgba(61,224,255,.16),0 0 16px var(--neon-cyan-glow);
+  transform:scale(1);transform-origin:center;
+}
+.horizon .poi::after{
+  content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:1px solid var(--neon-cyan);opacity:.6;
+  animation:ping 2.6s var(--ease-out) infinite;
+}
+.horizon .poi--violet{background:var(--neon-violet);box-shadow:0 0 0 4px rgba(157,107,255,.18),0 0 18px var(--neon-violet-glow)}
+.horizon .poi--violet::after{border-color:var(--neon-violet)}
+.horizon .poi--pink{background:var(--neon-pink);box-shadow:0 0 0 4px rgba(255,77,141,.18),0 0 18px rgba(255,77,141,.45)}
+.horizon .poi--pink::after{border-color:var(--neon-pink)}
+@keyframes ping{0%{transform:scale(1);opacity:.55}80%,100%{transform:scale(2.1);opacity:0}}
+
+.horizon .hero__content{position:relative;z-index:3;max-width:760px}
+/* sombra sutil para que la copy se lea siempre, aunque pase un punto cerca */
+.horizon .hero__eyebrow,.horizon .hero__title,.horizon .hero__sub{text-shadow:0 1px 2px rgba(5,6,10,.55),0 2px 20px rgba(5,6,10,.55)}
+.horizon .hero__eyebrow{
+  font-family:var(--font-display);text-transform:uppercase;letter-spacing:.34em;
+  font-size:.72rem;color:var(--neon-cyan);margin-bottom:var(--s-3);
+}
+.horizon .hero__title{
+  font-family:var(--font-display);font-weight:600;
+  font-size:clamp(2.4rem,11.5vw,5.6rem);line-height:1;letter-spacing:-.03em;
+  margin-bottom:var(--s-3);
+}
+.horizon .hero__title .line{display:block;overflow:hidden;padding-bottom:.06em}
+.horizon .hero__title .line > span{display:block}
+.horizon .hero__sub{color:var(--text-mid);font-size:1.05rem;max-width:46ch;margin-bottom:var(--s-4)}
+.horizon .hero__actions{display:flex;flex-wrap:wrap;gap:.85rem}
+
+.horizon .hero__scroll{
+  position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);
+  z-index:2;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+  font-family:var(--font-display);font-size:.66rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--text-lo);
+}
+.horizon .hero__mouse{width:22px;height:34px;border:1px solid var(--line);border-radius:12px;position:relative}
+.horizon .hero__mouse span{
+  position:absolute;top:6px;left:50%;width:3px;height:7px;border-radius:3px;
+  background:var(--neon-cyan);transform:translateX(-50%);
+  animation:scrolldot 1.8s var(--ease-out) infinite;
+}
+@keyframes scrolldot{0%{opacity:0;top:6px}40%{opacity:1}80%,100%{opacity:0;top:18px}}
+
+/* =========================================================
+   LIVING MAP
+   ========================================================= */
+.horizon .map{padding:var(--s-7) 1.25rem;position:relative}
+.horizon .map__head{max-width:640px;margin-bottom:var(--s-5)}
+
+.horizon .map__stage{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;
+  background:var(--bg-deep);
+  border:1px solid var(--line);
+  aspect-ratio:3/4;max-width:560px;margin:0 auto;
+  box-shadow:0 30px 80px -40px rgba(0,0,0,.8);
+}
+@media (min-width:760px){.horizon .map__stage{aspect-ratio:16/10;max-width:920px}}
+
+/* real Leaflet map fills the stage */
+.horizon .map__leaflet{position:absolute;inset:0;width:100%;height:100%;background:var(--bg-deep);z-index:1}
+
+/* neon vignette over the map (non-blocking) */
+.horizon .map__overlay-glow{
+  position:absolute;inset:0;z-index:400;pointer-events:none;
+  box-shadow:inset 0 0 80px 10px rgba(5,6,10,.75);
+  background:radial-gradient(120% 90% at 50% 0%,transparent 60%,rgba(5,6,10,.4) 100%);
+}
+
+.horizon .map__hint{
+  position:absolute;left:0;right:0;bottom:.7rem;z-index:500;text-align:center;
+  font-family:var(--font-display);font-size:.64rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-mid);pointer-events:none;
+  text-shadow:0 1px 6px rgba(5,6,10,.9);
+}
+.horizon .map__fallback{
+  display:flex;align-items:center;justify-content:center;height:100%;padding:2rem;
+  text-align:center;color:var(--text-lo);font-size:.95rem;
+}
+
+/* cargador del mapa (cubre el stage hasta que las tiles terminan de cargar) */
+.horizon .map__loader{
+  position:absolute;inset:0;z-index:600;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
+  background:var(--bg-deep);
+  transition:opacity .5s ease,visibility .5s ease;
+}
+.horizon .map__loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.horizon .map__spinner{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--line);border-top-color:var(--neon-cyan);
+  animation:hzspin .8s linear infinite;
+}
+.horizon .map__loader-text{
+  font-family:var(--font-display);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-lo);
+}
+@keyframes hzspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.horizon .map__spinner{animation-duration:1.6s}}
+
+/* --- custom neon markers --- */
+.horizon .mmarker{background:none;border:none;overflow:visible}
+.horizon .mmarker__inner{
+  position:relative;width:20px;height:20px;transform-origin:center bottom;cursor:pointer;
+}
+.horizon .mmarker__pin{
+  position:absolute;left:1px;bottom:0;width:18px;height:18px;
+  border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  background:var(--neon-cyan);box-shadow:0 0 16px var(--neon-cyan-glow);
+  border:1.5px solid rgba(255,255,255,.85);
+  transition:transform .25s var(--ease-spring),box-shadow .25s;
+}
+.horizon .mmarker__chip{
+  position:absolute;left:50%;bottom:24px;transform:translateX(-50%);
+  font-family:var(--font-display);font-size:.66rem;font-weight:600;color:#F4F7FB;
+  background:rgba(5,6,10,.85);padding:.18rem .5rem;border-radius:100px;
+  border:1px solid var(--line);backdrop-filter:blur(8px);white-space:nowrap;
+  transition:border-color .25s,color .25s;
+}
+.horizon .mmarker--violet .mmarker__pin{background:var(--neon-violet);box-shadow:0 0 16px var(--neon-violet-glow)}
+.horizon .mmarker--pink .mmarker__pin{background:var(--neon-pink);box-shadow:0 0 16px rgba(255,77,141,.55)}
+.horizon .mmarker:hover{z-index:1000 !important}
+.horizon .mmarker:hover .mmarker__pin{transform:rotate(-45deg) scale(1.3)}
+.horizon .mmarker:hover .mmarker__chip{color:var(--neon-cyan);border-color:var(--neon-cyan)}
+
+/* --- dark theme overrides for Leaflet chrome (scoped to landing) --- */
+.horizon .leaflet-container{font-family:var(--font-body);background:var(--bg-deep)}
+.horizon .leaflet-bar,.horizon .leaflet-bar a{
+  background:rgba(10,12,20,.9);color:var(--text-hi);
+  border-color:var(--line) !important;backdrop-filter:blur(8px);
+}
+.horizon .leaflet-bar a:hover{background:var(--glass-strong);color:var(--neon-cyan)}
+.horizon .leaflet-control-attribution{
+  background:rgba(5,6,10,.6) !important;color:var(--text-lo) !important;
+  font-size:.62rem;backdrop-filter:blur(6px);
+}
+.horizon .leaflet-control-attribution a{color:var(--text-mid) !important}
+.horizon .leaflet-control-zoom{margin:.8rem !important;border-radius:10px;overflow:hidden}
+
+/* =========================================================
+   PROPERTIES
+   ========================================================= */
+.horizon .props{padding:var(--s-7) 1.25rem}
+.horizon .props__head{max-width:640px;margin-bottom:var(--s-5)}
+.horizon .props__grid{display:grid;gap:1.1rem}
+.horizon .props__empty{
+  color:var(--text-lo);font-size:1rem;padding:2rem 0;
+}
+
+.horizon .pcard{
+  position:relative;border-radius:var(--r-md);overflow:hidden;
+  border:1px solid var(--line);background:var(--bg-soft);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform .35s var(--ease-out),border-color .35s,box-shadow .35s;
+}
+.horizon .pcard:active{transform:scale(.985)}
+.horizon .pcard__media{position:relative;aspect-ratio:4/3;overflow:hidden}
+.horizon .pcard__media img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s var(--ease-out),filter .4s;
+  filter:brightness(.82) saturate(1.05);
+}
+.horizon .pcard__shine{
+  position:absolute;inset:0;opacity:0;transition:opacity .4s;
+  background:radial-gradient(60% 50% at 50% 50%,var(--neon-cyan-glow),transparent 70%);
+  mix-blend-mode:screen;
+}
+.horizon .pcard__tag{
+  position:absolute;top:.8rem;left:.8rem;z-index:2;
+  font-family:var(--font-display);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:.35rem .7rem;border-radius:100px;
+  background:rgba(5,6,10,.55);border:1px solid var(--line);backdrop-filter:blur(8px);
+}
+.horizon .pcard__body{padding:1.1rem 1.1rem 1.3rem}
+.horizon .pcard__loc{font-family:var(--font-display);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--neon-cyan);margin-bottom:.35rem}
+.horizon .pcard__name{font-family:var(--font-display);font-weight:600;font-size:1.35rem;letter-spacing:-.01em;margin-bottom:.6rem}
+.horizon .pcard__meta{display:flex;gap:1rem;color:var(--text-lo);font-size:.84rem;margin-bottom:.9rem}
+.horizon .pcard__meta span{display:flex;align-items:center;gap:.3rem}
+.horizon .pcard__foot{display:flex;align-items:center;justify-content:space-between}
+.horizon .pcard__price{font-family:var(--font-display);font-weight:600;font-size:1.15rem}
+.horizon .pcard__open{
+  display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--text-mid);
+  font-family:var(--font-display);
+}
+.horizon .pcard__open svg{width:16px;height:16px;stroke:var(--neon-cyan);stroke-width:2;fill:none;transition:transform .3s}
+
+@media (hover:hover){
+  .horizon .pcard:hover{transform:translateY(-6px);border-color:var(--neon-cyan);box-shadow:0 20px 50px -20px var(--neon-cyan-glow)}
+  .horizon .pcard:hover .pcard__media img{transform:scale(1.06);filter:brightness(.95) saturate(1.1)}
+  .horizon .pcard:hover .pcard__shine{opacity:.5}
+  .horizon .pcard:hover .pcard__open svg{transform:translate(3px,-3px)}
+}
+
+@media (min-width:680px){.horizon .props__grid{grid-template-columns:repeat(2,1fr);gap:1.4rem}}
+@media (min-width:1080px){
+  .horizon .props{padding:var(--s-8) 2.5rem}
+  .horizon .props__grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* =========================================================
+   PORTAL OVERLAY
+   ========================================================= */
+.horizon .portal{
+  position:fixed;inset:0;z-index:var(--z-portal);
+  visibility:hidden;opacity:0;
+  background:rgba(5,6,10,.55);backdrop-filter:blur(0px);
+  display:flex;flex-direction:column;
+  transition:opacity .4s,visibility .4s,backdrop-filter .5s;
+}
+.horizon .portal.is-open{visibility:visible;opacity:1;backdrop-filter:blur(6px)}
+.horizon .portal__media{position:relative;flex:1;overflow:hidden;min-height:42vh}
+.horizon .portal__media img{width:100%;height:100%;object-fit:cover}
+.horizon .portal__media::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 30%,var(--bg-void) 98%);
+}
+.horizon .portal__close{
+  position:absolute;top:max(1rem,env(safe-area-inset-top));right:1rem;z-index:3;
+  width:46px;height:46px;border-radius:50%;font-size:1.6rem;line-height:1;
+  background:rgba(5,6,10,.5);border:1px solid var(--line);backdrop-filter:blur(10px);
+  color:#F4F7FB;
+}
+.horizon .portal__panel{
+  position:relative;z-index:2;margin-top:-12vh;
+  padding:0 1.5rem calc(2rem + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--bg-void) 14%);
+}
+.horizon .portal__loc{font-family:var(--font-display);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--neon-cyan);margin-bottom:.5rem}
+.horizon .portal__name{font-family:var(--font-display);font-weight:600;font-size:clamp(1.8rem,7vw,2.6rem);letter-spacing:-.02em;margin-bottom:.4rem}
+.horizon .portal__addr{font-size:.9rem;color:var(--text-mid);margin-bottom:1rem}
+.horizon .portal__desc{color:var(--text-lo);max-width:54ch;margin-bottom:1.4rem}
+.horizon .portal__specs{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1.6rem}
+.horizon .portal__specs span{
+  font-family:var(--font-display);font-size:.82rem;color:var(--text-mid);
+  padding:.5rem .9rem;border-radius:100px;background:var(--glass);border:1px solid var(--line);
+}
+.horizon .portal__foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.horizon .portal__price{font-family:var(--font-display);font-weight:600;font-size:1.5rem}
+.horizon .portal__actions{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+.horizon .portal__link{
+  font-family:var(--font-display);font-size:.85rem;color:var(--text-mid);
+  border-bottom:1px solid var(--line);padding-bottom:2px;transition:color .25s,border-color .25s;
+}
+.horizon .portal__link:hover{color:var(--neon-cyan);border-color:var(--neon-cyan)}
+
+@media (min-width:900px){
+  .horizon .portal{flex-direction:row}
+  .horizon .portal__media{min-height:100vh}
+  .horizon .portal__panel{
+    width:min(42%,560px);margin-top:0;display:flex;flex-direction:column;
+    justify-content:center;background:var(--bg-deep);
+    padding:3rem;border-left:1px solid var(--line);
+  }
+  .horizon .portal__media::after{background:linear-gradient(90deg,transparent 50%,rgba(10,12,20,.4))}
+}
+
+/* =========================================================
+   LIFESTYLE
+   Mobile: clean stacked cards · Desktop: pinned horizontal scroll
+   ========================================================= */
+.horizon .life{position:relative}
+.horizon .life__sticky{display:flex;flex-direction:column}
+.horizon .life__track{display:flex;flex-direction:column}
+.horizon .life__panel{
+  position:relative;display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:62svh;overflow:hidden;
+}
+.horizon .life__img{position:absolute;inset:0}
+.horizon .life__img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+.horizon .life__panel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,10,.15) 30%,rgba(5,6,10,.55) 70%,var(--bg-void))}
+.horizon .life__copy{position:relative;z-index:2;padding:0 1.25rem 2.4rem;max-width:560px}
+.horizon .life__idx{font-family:var(--font-display);font-size:.85rem;color:var(--neon-cyan);letter-spacing:.2em}
+.horizon .life__copy h3{font-family:var(--font-display);font-weight:600;font-size:clamp(1.8rem,8vw,3.6rem);line-height:1.04;letter-spacing:-.02em;margin:.5rem 0 .7rem}
+.horizon .life__copy p{color:var(--text-mid);font-size:1.02rem;max-width:42ch}
+
+@media (min-width:720px){
+  .horizon .life__sticky{height:100svh;overflow:hidden;justify-content:center}
+  .horizon .life__track{flex-direction:row;will-change:transform}
+  .horizon .life__panel{flex:0 0 100vw;height:100svh;min-height:0}
+  .horizon .life__copy{padding:0 2.5rem var(--s-8)}
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+.horizon .stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+  background:var(--line-soft);
+  border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+}
+.horizon .stats__item{
+  background:var(--bg-void);padding:var(--s-5) 1.25rem;text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+}
+.horizon .stats__num{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(2.6rem,11vw,4rem);line-height:1;letter-spacing:-.03em;
+  background:linear-gradient(120deg,var(--neon-cyan),var(--neon-violet));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  display:inline-block;
+}
+.horizon .stats__plus{
+  font-family:var(--font-display);font-weight:700;font-size:clamp(1.4rem,6vw,2rem);
+  color:var(--neon-violet);
+}
+.horizon .stats__item p{color:var(--text-lo);font-size:.86rem;margin-top:.6rem}
+@media (min-width:900px){.horizon .stats{grid-template-columns:repeat(4,1fr)}}
+
+/* =========================================================
+   CTA
+   ========================================================= */
+.horizon .cta{position:relative;padding:var(--s-8) 1.25rem;overflow:hidden;text-align:center}
+.horizon .cta__glow{
+  position:absolute;left:50%;top:30%;width:600px;height:600px;max-width:120vw;
+  transform:translate(-50%,-50%);pointer-events:none;
+  background:radial-gradient(circle,var(--neon-violet-glow) 0%,transparent 60%);
+  filter:blur(40px);opacity:.5;
+}
+.horizon .cta__inner{position:relative;z-index:2;max-width:560px;margin:0 auto}
+.horizon .cta h2{font-family:var(--font-display);font-weight:600;font-size:clamp(2rem,9vw,3.4rem);line-height:1.04;letter-spacing:-.02em;margin-bottom:var(--s-2)}
+.horizon .cta p{color:var(--text-lo);margin-bottom:var(--s-4);font-size:1.02rem}
+.horizon .cta__form{display:flex;flex-direction:column;gap:1rem;text-align:left}
+.horizon .field{display:flex;flex-direction:column;gap:.4rem}
+.horizon .field label{font-family:var(--font-display);font-size:.8rem;letter-spacing:.08em;color:var(--text-mid)}
+.horizon .field input,.horizon .field textarea{
+  min-height:54px;padding:.9rem 1.1rem;border-radius:var(--r-sm);
+  background:var(--glass);border:1px solid var(--line);color:var(--text-hi);
+  font-family:var(--font-body);font-size:1rem;transition:border-color .3s,background .3s;
+  resize:vertical;
+}
+.horizon .field input::placeholder,.horizon .field textarea::placeholder{color:var(--text-lo)}
+.horizon .field input:focus,.horizon .field textarea:focus{outline:none;border-color:var(--neon-cyan);background:var(--glass-strong);box-shadow:0 0 0 3px rgba(61,224,255,.12)}
+.horizon .field input:invalid:not(:placeholder-shown){border-color:var(--neon-pink)}
+.horizon .cta__status{font-size:.88rem;color:var(--neon-cyan);min-height:1.2em;text-align:center}
+.horizon .btn[disabled]{opacity:.6;pointer-events:none}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.horizon .footer{padding:var(--s-6) 1.25rem calc(var(--s-8) + 60px);border-top:1px solid var(--line-soft)}
+.horizon .footer__top{display:flex;flex-direction:column;gap:1.5rem;margin-bottom:var(--s-4)}
+.horizon .footer__links{display:flex;flex-wrap:wrap;gap:1.2rem}
+.horizon .footer__links a{color:var(--text-lo);font-size:.9rem;transition:color .25s}
+.horizon .footer__links a:hover{color:var(--neon-cyan)}
+.horizon .footer__bottom{display:flex;flex-direction:column;gap:.5rem;color:var(--text-lo);font-size:.8rem;border-top:1px solid var(--line-soft);padding-top:var(--s-3)}
+@media (min-width:760px){
+  .horizon .footer{padding:var(--s-6) 2.5rem var(--s-6)}
+  .horizon .footer__top{flex-direction:row;align-items:center;justify-content:space-between}
+  .horizon .footer__bottom{flex-direction:row;justify-content:space-between}
+}
+
+/* =========================================================
+   MOBILE BOTTOM NAV
+   ========================================================= */
+.horizon .botnav{
+  position:fixed;left:0;right:0;bottom:0;z-index:var(--z-nav);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom));
+  background:rgba(5,6,10,.72);backdrop-filter:blur(var(--blur));
+  border-top:1px solid var(--line-soft);
+}
+.horizon .botnav__item{
+  display:flex;flex-direction:column;align-items:center;gap:.2rem;
+  min-width:56px;min-height:48px;justify-content:center;
+  font-family:var(--font-display);font-size:.62rem;letter-spacing:.04em;
+  color:var(--text-lo);transition:color .25s;-webkit-tap-highlight-color:transparent;
+}
+.horizon .botnav__item svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s,transform .25s var(--ease-spring)}
+.horizon .botnav__item.is-active{color:var(--neon-cyan)}
+.horizon .botnav__item.is-active svg{transform:translateY(-2px)}
+@media (min-width:900px){.horizon .botnav{display:none}}
+
+/* =========================================================
+   REVEAL helpers (JS toggles .is-in)
+   ========================================================= */
+.horizon [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
+.horizon [data-reveal].is-in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .horizon [data-reveal],.horizon .poi{opacity:1!important;transform:none!important}
+  .horizon .poi::after,.horizon .hero__mouse span{animation:none}
+}
+
+/* =========================================================
+   LIGHT THEME — toggled via .horizon.is-light
+   Surfaces & typography flip to light. The photographic zones
+   (hero, lifestyle) keep light text over their dark imagery so
+   they stay legible; the map tiles are swapped to a light basemap
+   from JS.
+   ========================================================= */
+.horizon.is-light{
+  /* superficies — neutros claros y aireados con profundidad sutil */
+  --bg-void:#F3F5FA;     /* página */
+  --bg-deep:#FFFFFF;     /* paneles elevados (mapa, portal) */
+  --bg-soft:#FBFCFE;     /* tarjetas */
+  --glass:rgba(22,30,58,.04);
+  --glass-strong:rgba(22,30,58,.07);
+  --line:rgba(22,30,58,.10);
+  --line-soft:rgba(22,30,58,.055);
+  /* texto — tinta azul marino, no negro puro */
+  --text-hi:#141C2E;
+  --text-mid:#48536B;
+  --text-lo:#76819A;
+  /* acentos — jewel tones que leen bien sobre claro */
+  --neon-cyan:#0C7C99;    /* teal profundo */
+  --neon-violet:#5A4FD6;  /* índigo */
+  --neon-pink:#CC2C82;    /* rosa */
+  --neon-cyan-glow:rgba(12,124,153,.20);
+  --neon-violet-glow:rgba(90,79,214,.18);
+}
+
+/* tarjetas y stats: blancas y despegadas del fondo con una sombra suave */
+.horizon.is-light .pcard{background:#FFFFFF;box-shadow:0 1px 2px rgba(22,30,58,.05),0 8px 24px -18px rgba(22,30,58,.30)}
+.horizon.is-light .stats__item{background:#FFFFFF}
+.horizon.is-light .map__stage{box-shadow:0 24px 60px -34px rgba(22,30,58,.45)}
+/* viñeta del mapa: en claro debe ser muy sutil (la oscura ensucia el mapa claro) */
+.horizon.is-light .map__overlay-glow{
+  box-shadow:inset 0 0 60px 8px rgba(22,30,58,.07);
+  background:radial-gradient(120% 90% at 50% 0%,transparent 72%,rgba(22,30,58,.05) 100%);
+}
+.horizon.is-light .map__hint{color:var(--text-mid);text-shadow:0 1px 3px rgba(255,255,255,.85)}
+.horizon.is-light .mmarker__chip{box-shadow:0 2px 8px rgba(22,30,58,.18)}
+
+/* botón primario: gradiente más profundo → texto blanco para contraste */
+.horizon.is-light .btn--primary{color:#fff;box-shadow:0 10px 26px -12px rgba(90,79,214,.55)}
+@media (hover:hover){.horizon.is-light .btn--primary:hover{box-shadow:0 16px 34px -12px rgba(90,79,214,.6)}}
+
+/* inputs un punto más definidos sobre claro */
+.horizon.is-light .field input,.horizon.is-light .field textarea{background:#fff;border-color:rgba(22,30,58,.16)}
+.horizon.is-light .field input::placeholder,.horizon.is-light .field textarea::placeholder{color:#9AA3B6}
+
+/* chip de precio en los pines: claro sobre el mapa claro */
+.horizon.is-light .mmarker__chip{color:#141C2E;background:rgba(255,255,255,.92);border-color:rgba(22,30,58,.14)}
+
+/* NAV — light text while transparent over the dark hero,
+   light glass pill (dark text) once scrolled onto light content */
+.horizon.is-light .nav{color:#F4F7FB}
+.horizon.is-light .nav .nav__links a{color:rgba(244,247,251,.82)}
+.horizon.is-light .nav .nav__links a:hover{color:#fff}
+.horizon.is-light .nav__cta{color:#F4F7FB;border-color:rgba(255,255,255,.30);background:rgba(255,255,255,.10)}
+.horizon.is-light .nav.is-scrolled{background:rgba(255,255,255,.80);border-bottom-color:var(--line-soft);color:var(--text-hi)}
+.horizon.is-light .nav.is-scrolled .nav__links a{color:var(--text-mid)}
+.horizon.is-light .nav.is-scrolled .nav__links a:hover{color:var(--text-hi)}
+.horizon.is-light .nav.is-scrolled .nav__cta{color:var(--text-hi);border-color:var(--line);background:var(--glass)}
+
+/* HERO — keep the night photo dark with light text */
+.horizon.is-light .hero__bg img,.horizon.is-light .hero__bg video{opacity:.8}
+.horizon.is-light .hero__eyebrow{color:#54E3FF}
+.horizon.is-light .hero__title{color:#F4F7FB}
+.horizon.is-light .hero__sub{color:#DCE3F0}
+.horizon.is-light .hero__scroll{color:#C2CAD8}
+.horizon.is-light .hero .btn--ghost{color:#F4F7FB;border-color:rgba(255,255,255,.30);background:rgba(255,255,255,.10)}
+
+/* LIFESTYLE — same dark-photo / light-text treatment */
+.horizon.is-light .life__idx{color:#54E3FF}
+.horizon.is-light .life__copy h3{color:#F4F7FB}
+.horizon.is-light .life__copy p{color:#DCE3F0}
